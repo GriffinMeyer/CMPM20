@@ -1,36 +1,63 @@
+//Initlize 
+
+var canvas = document.getElementById("canvas");
+var width = canvas.width;
+var height = canvas.height;
+var ctx = canvas.getContext("2d");
 
 
-//Making a queue
+
+canvas.style.background = '#000000';
+
+
+window.onkeydown = function(e){
+	switch(e.keyCode){
+		case 37:
+			snake.left();
+			break;
+			
+		case 38:
+			snake.up();
+			break;
+		
+		case 39:
+			snake.right();
+			break;
+			
+		case 40:
+			snake.down();
+			break;
+		
+		
+	}
+};
+
+//Define basic queue function
 function queue(){
 	var that = this;
-	that.arr = [];
+	that.array = [];
 }
 
 queue.prototype = {
-	enqueue: function(elem){
-		this.arr.push(elem);
+	constructor: queue,
+	
+	insert: function(elem){
+		this.array.push(elem);
 	},
 	
-	dequeue: function(){
-		var retValue = this.arr[0];
-		var newArr = new Array(this.arr.length -1);
-		for(var i = 0; i < newArr.length; i++){
-			newArr[i] = this.arr[i + 1];
+	pop: function (){
+		var retVal = this.arr[0];
+		var newArray = new Array(this.arr.length -1);
+		for (var i = 0; i < newArray.length; i++){
+			newArray[i] = this.arr[i + 1];
 		}
-		this.arr = newArr;
-		return retValue;
-		
 	},
 	
-	getFirstElem: function(){
-		return this.arr[0];
+	getFirst: function(){
+		return this.arr[this.arr.length -1];
 	},
 	
-	getLastElem: function(){
-		this.arr[this.arr.length -1];
-	},
-	
-	elementAt: function(index){
+	indexOf: function(index){
 		return this.arr[index];
 	},
 	
@@ -40,215 +67,159 @@ queue.prototype = {
 	
 };
 
-//Coordinates
-
-function Coords(x, y){
+//Coordinate function
+function coords(x,y){
 	var that = this;
-	that.x = x*10;
-	that.y = y*10;
+	that.x = x * 10;
+	that.y = y * 10;
 }
 
-//Snake
 
-function Snake(x,y, bodyLength){
+//the snake function
+function snake(x,y, length){
 	var that = this;
-	that.snakeBody = new queue();
-	for(var i = 0; I < bodyLength; i++){
-		that.snakeBody.enqueue(new Coords(x + i, y));
+	that.snakeObj = new queue();
+	for(var i = 0; i < length; i++){
+		that.snakeObj.insert(new coords(x+1,y));
 	}
-	that.currentDirection = new Coords(1,0);
-	that.head = that.snakeBody.getLastElem();
+	that.direction = new coords(1,0);
+	that.head = that.snakeObj.getLast();
 }
 
-Snake.prototype = {
+snake.prototype = {
+	constructor: snake,
 	
-	getHead: function(){
+	getHead: function (){
 		return this.head;
 	},
 	
-	getNextHead: function(){
-		var nexthead = new Coords(
-			parseInt(this.head.x + this.currentDirection.x) / 10,
-			parseInt(this.head.y + this.currentDirection.y) / 10
-		);
-		
-		return nextHead;
+	getNewHead: function(){
+		var newHead =
+		new coords(
+			parseInt(this.head.x + this.direction.x)/10,
+			praseInt(this.head.y + this.direction.y)/10
+	);
+	return newHead;
 	},
+	
 	move: function(){
-		var nextHead = this.getNextHead();
-		this.snakeBody.enqueue(nextHead);
-		this.snakeBody.dequeue();
+		var nextHead = this.getNewHead();
+		this.snakeObj.insert(newHead);
+		this.snakeObj.pop();
 		
 		this.head = nextHead;
 	},
-
-		move: function () {
-			var nextHead = this.getNextHead();
-			this.snakeBody.enqueue(nextHead);
-			this.snakeBody.dequeue();
-
-			this.head = nextHead;
-		},
-
-		turnLeft: function () {
-			if (this.currentDirection.x !== 1 && this.currentDirection.y !== 0) {
-				var leftDirection = new Coords(-1, 0);
-				this.currentDirection = leftDirection;
-			}
-		},
-
-		turnRight: function () {
-			if (this.currentDirection.x !== -1 && this.currentDirection.y !== 0) {
-				var rightDirection = new Coords(1, 0);
-				this.currentDirection = rightDirection;
-			}
-		},
-
-		turnUp: function () {
-			if (this.currentDirection.x !== 0 && this.currentDirection !== 1) {
-				var upDirection = new Coords(0, -1);
-				this.currentDirection = upDirection;
-			}
-		},
-
-		turnDown: function () {
-			if (this.currentDirection.x !== 0 && this.curentDirection !== -1) {
-				var downDirection = new Coords(0, 1);
-				this.currentDirection = downDirection;
-			}
+	
+	left: function(){
+		if(this.direction.x !== 1 && this.direction.y !==0){
+			var leftDir = new coords(-1,0);
+			this.direction = leftDir;
+			//ctx.fillStyle="#FF0000";
 		}
+	},
+	
+	right: function(){
+		if(this.direction.x !== -1 && this.direction.y !== 0){
+			var rightDir = new coords(1,0);
+			this.direction = rightDir;
+		}
+	},
+	
+	up: function(){
+		if(this.direction.x !== 0 && this.direction !== 1){
+			var upDir = new coords(0,-1);
+			this.direction = upDir;
+		}
+	},
+	
+	down: function(){
+		if(this.direction.x !==0 && this.direction !== -1){
+			var downDir = new coords(0,1);
+			this.direction = downDir;
+		}
+	} 
 };
 
-function Food(width, height){
-	var minWidth = 10;
-	var maxWidth = width -10;
-	var minHeight = 10;
-	var maxHeight = height - 10;
+//Food logic
+function food(width, height){
+	var x = parseInt((Math.random() * width)/10);
+	var y = parseInt((Math.random() * height)/10);
 	
-	var x = parseInt((Math.random() * (maxWidth - minWidth) + minWidth) / 10);
-		var y = parseInt((Math.random() * (maxHeight - minHeight) + minHeight) / 10);
+	this.coordinates = new coords(x,y);
+}
 
-		this.coords = new Coords(x, y);
-	}
+//draw stage
+function drawStage(ctx, width, height){
+	canvas.style.background = '#000000';
+}
+
+function randColor(){
+	var rand = parseInt(Math.random()*4);
+	if(rand == 0){ctx.fillStyle="red";}
+	if(rand == 1){ctx.fillStyle="green";}
+	if(rand == 2){ctx.fillStyle="yellow";}
+	if(rand == 3){ctx.fillStyle="red";}
+}
+
+function placeFood(ctx, food){
+	randColor();
+	ctx.fillRect(food.coordinates.x,food.coordinates.y,10,10);
 	
-	function drawField(ctx, width, height){
-		ctx.save();
+}
+
+function drawSnake(ctx, snake){
+	var snakeObj = snake.snakeObj;
+	for(var i = 0; i < snakeObj.length(); i++){
+		var snakePeice = snakeObj.indexOf(i);
+		ctx.fillRect(snakePeice.x, snakePeice.y, 10, 10);
+	}
+}
+
+function restart(){
+	document.location.reload(false);
+}
+
+function run(ctx, snake, width, height){
+	var newHead = snake.getNewHead();
+	var snakeBody = snake.snakeObj;
+	
+	for(var i = 0; i < snakeBody.lenth(); i++){
+		var elem = snakeBody.indexOf(i);
+		if(elem.x === newHead.x && elem.y === newHead.y){
+			restart();
+		}
+	}
+	// check for collision with edge
+		if (nextHead.x <= -10 ||
+				nextHead.x >= width ||
+				nextHead.y <= -10 ||
+				nextHead.y >= height) {
+			restart();
+		}
 		
-		ctx.fillStyle = "#0f0";
-		ctx.strokeStyle = "#000";
-		ctx.fillRect(food.coords.x, food.coords.y, 10, 10);
-		ctx.strokeRect(food.coords.x, food.coords.y, 10, 10);
-
-		ctx.restore();
-	}
-	
-	
-	function drawSnake(ctx, snake) {
-		ctx.save();
-
-		ctx.fillStyle = "#f00";
-		ctx.strokeStyle = "#000";
-
-		var snakeBody = snake.snakeBody;
-		for (var i = 0; i < snakeBody.length(); i++) {
-			var snakeElem = snakeBody.elementAt(i);
-			ctx.fillRect(snakeElem.x, snakeElem.y, 10, 10);
-			ctx.strokeRect(snakeElem.x, snakeElem.y, 10, 10);
-		}
-
-		ctx.restore();
-	}
-
-	function saveScore(score) {
-		var name = prompt("GAME OVER!\nEnter nickname:");
-		if (localStorage[name]) {
-			if (localStorage[name] < score) {
-				localStorage[name] = score;
-			}
-		}
-		else {
-			localStorage[name] = score;
-		}
-	}
-
-	function restartGame() {
-		document.location.reload(false);
-	}
-
-	// Initialization
-	var canvas = document.getElementById("canvas")[0];
-	var width = canvas.width;
-	var height = canvas.height;
-	var ctx = canvas.getContext("2d");
-
-	var snake = new Snake(5, 5, 5);
-	var food = new Food(width, height);
-	var score = 0;
-
-	var scoreDiv = document.getElementById("score");
-	scoreDiv.style.fontWeight = "bold";
-	scoreDiv.innerHTML = "Score: " + score;
-
-	window.onkeydown = function (ev) {
-		switch (ev.keyCode) {
-			case 37:
-				snake.turnLeft();
-				break;
-			case 38:
-				snake.turnUp();
-				break;
-			case 39:
-				snake.turnRight();
-				break;
-			case 40:
-				snake.turnDown();
-				break;
-		}
-	};
-
-	function run(ctx, snake, width, height) {
-		var nextHead = snake.getNextHead();
-		var snakeBody = snake.snakeBody;
-
-		// check for collision with itself
-		for (var i = 0; i < snakeBody.length(); i++) {
-			var elem = snakeBody.elementAt(i);
-			if (elem.x === nextHead.x && elem.y === nextHead.y) {
-				saveScore(score);
-				restartGame();
-			}
-		}
-
-		// check for collision with side walls
-		if (nextHead.x <= 0 ||
-				nextHead.x >= width - 10 ||
-				nextHead.y <= 0 ||
-				nextHead.y >= height - 10) {
-			saveScore(score);
-			restartGame();
-		}
-
-		// check for collision with food
-		for (var i = 0; i < snakeBody.length() ; i++) {
-			var elem = snakeBody.elementAt(i);
-			if (elem.x === food.coords.x && elem.y === food.coords.y) {
-				var snakeNextHead = snake.getNextHead();
-				snake.snakeBody.enqueue(snakeNextHead);
-				snake.head = snakeNextHead;
-				food = new Food(width, height);
+		//food collision
+		for(var i = 0; i <snakeBody.length(); i++){
+			var elem = snakeBody.indexOf(i);
+			if(elem.x === food.coordinates.x && elem.y === food.coordinates.y){
+				var snakeNewHead = snake.getNewHead();
+				snake.snakeBody.insert(snakeNewHead);
+				snake.head = snakeNewHead;
+				food = new food(width, height);
 				score += 100;
-				scoreDiv.innerHTML = "Score: " + score;
-				break;
+				break
 			}
 		}
-
 		snake.move();
-		drawField(ctx, width, height);
-		drawFood(ctx, food);
+		drawStage(ctx,width, height);
+		placeFood(ctx, food);
 		drawSnake(ctx, snake);
-	}
+		ctx.fillText(score, 5, height -5);
+}
 
-	function gameLoop() {
+var snake = new Snake(5,5,5);
+var food = new Food(width, height);
+var score = 0;
+function gameLoop() {
 		run(ctx, snake, width, height);
 	}
 

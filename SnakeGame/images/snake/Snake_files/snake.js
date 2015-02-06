@@ -136,20 +136,25 @@
 		ctx.fillStyle = "#00f";
 		ctx.strokeStyle = "#000";
 	}
+	
+	function randColor(){
+	var rand = parseInt(Math.random()*4);
+	var color = "";
+	if(rand == 0){color = "red";}
+	if(rand == 1){color = "green";}
+	if(rand == 2){color ="yellow";}
+	if(rand == 3){color ="red";}
+}
 
-	function drawFood(ctx, food) {
-		ctx.save();
+	function drawFood(ctx, food, color) {
 
-		ctx.fillStyle = "#0f0";
-		ctx.strokeStyle = "#000";
+		ctx.fillStyle = color;
 		ctx.fillRect(food.coords.x, food.coords.y, 10, 10);
 		ctx.strokeRect(food.coords.x, food.coords.y, 10, 10);
 
-		ctx.restore();
 	}
 
 	function drawSnake(ctx, snake) {
-		ctx.save();
 
 		ctx.fillStyle = "#f00";
 		ctx.strokeStyle = "#000";
@@ -161,7 +166,7 @@
 			ctx.strokeRect(snakeElem.x, snakeElem.y, 10, 10);
 		}
 
-		ctx.restore();
+	
 	}
 
 	function restartGame() {
@@ -195,7 +200,7 @@
 				snake.turnDown();
 				break;
 		}
-	}
+	};
 
 	function run(ctx, snake, width, height) {
 		var nextHead = snake.getNextHead();
@@ -225,6 +230,8 @@
 				snake.snakeBody.enqueue(snakeNextHead);
 				snake.head = snakeNextHead;
 				food = new Food(width, height);
+				var color = "red";
+				
 				score += 100;
 				
 				break;
@@ -233,9 +240,9 @@
 
 		snake.move();
 		drawField(ctx, width, height);
-		drawFood(ctx, food);
-		drawSnake(ctx, snake);
 		
+		drawSnake(ctx, snake);
+		drawFood(ctx, food, color);
 		ctx.fillText(score, 5, height -5);
 	}
 
