@@ -129,33 +129,12 @@
 
 	// canvas functions
 	function drawField(ctx, width, height) {
-		//ctx.save();
 
 		ctx.fillStyle = "#000";
 		ctx.fillRect(0, 0, width, height);
 
 		ctx.fillStyle = "#00f";
 		ctx.strokeStyle = "#000";
-		/*
-		// Draws the upper and lower borders
-		for (var i = 0; i < width; i += 10) {
-			ctx.fillRect(i, 0, 10, 10);
-			ctx.strokeRect(i, 0, 10, 10);
-
-			ctx.fillRect(i, height - 10, 10, 10);
-			ctx.strokeRect(i, height - 10, 10, 10);
-		}
-
-		// Draws the left and right borders
-		for (var i = 0; i < height; i += 10) {
-			ctx.fillRect(0, i, 10, 10);
-			ctx.strokeRect(0, i, 10, 10);
-
-			ctx.fillRect(width - 10, i, 10, 10);
-			ctx.strokeRect(width - 10, i, 10, 10);
-		}*/
-
-		//ctx.restore();
 	}
 
 	function drawFood(ctx, food) {
